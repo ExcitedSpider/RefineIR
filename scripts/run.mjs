@@ -1,10 +1,19 @@
 import { spawn } from 'node:child_process';
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve, basename } from 'node:path';
 const root = resolve(import.meta.dirname, '..');
-const svf = process.env.SVF_ROOT || '/home/qfeng/Workspace/SVF';
+const svf = process.env.SVF_ROOT || resolve(root, '../SVF');
 const llvm = process.env.LLVM_ROOT || `${svf}/llvm-21.1.0.obj`;
 const z3 = process.env.Z3_ROOT || `${svf}/z3.obj`;
+for (const [path, setting] of [
+  [`${svf}/Release-build/lib/cmake/SVF/SVFConfig.cmake`, 'SVF_ROOT'],
+  [`${llvm}/bin/clang`, 'LLVM_ROOT'],
+  [`${llvm}/bin/opt`, 'LLVM_ROOT'],
+  [`${z3}/include/z3++.h`, 'Z3_ROOT'],
+  [`${z3}/bin/libz3.so`, 'Z3_ROOT'],
+]) {
+  if (!existsSync(path)) throw new Error(`Missing dependency: ${path}\nBuild the toolchain using the README, or set ${setting} to your existing installation.`);
+}
 function run(command, args, extra = {}, expectedExit = 0) {
   return new Promise((resolve, reject) => {
     const p = spawn(command, args, { cwd: root, ...extra });
@@ -32,7 +41,8 @@ for (const [id, title, subtitle, expected, rounds] of examples) {
   await run(`${llvm}/bin/llvm-dis`, [`build/${id}.bc`, '-o', `build/${id}.ll`]);
   await run(`${root}/build/svf-cegar`, [`build/${id}.bc`, `examples/${id}.c`, `site/dist/data/${id}.json`]);
   const data = JSON.parse(readFileSync(`${root}/site/dist/data/${id}.json`));
-  console.log(`${id}: ${data.verdict}; ${data.rounds.length} rounds; ${data.reason}`);
+  const refinements=data.rounds.filter(r=>r.learnedPredicates?.length).length;
+  console.log(`${id}: ${data.verdict}; ${data.rounds.length} rounds; ${refinements} refinements; ${data.reason}`);
   if (data.verdict !== expected || data.rounds.length !== rounds) throw new Error(`Unexpected result for ${id}`);
   Object.assign(data, { id, title, subtitle, llvm: readFileSync(`${root}/build/${id}.ll`, 'utf8') });
   if (data.verdict === 'UNSAFE') {

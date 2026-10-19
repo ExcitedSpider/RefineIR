@@ -30,4 +30,4 @@ RUN node scripts/run.mjs && node scripts/package.mjs \
     && node scripts/dom-check.mjs
 
 EXPOSE 8000
-CMD ["python3", "-m", "http.server", "8000", "--bind", "0.0.0.0", "--directory", "site/dist"]
+CMD ["python3", "-m", "http.server", "8000", "--bind", "::", "--directory", "site/dist"]

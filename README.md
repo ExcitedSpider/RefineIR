@@ -13,7 +13,7 @@ docker build -t refineir .
 docker run --rm --name refineir-demo -p 8000:8000 refineir
 ```
 
-Open **http://localhost:8000**. From another device on your LAN, open `http://<your-machine-ip>:8000`.
+Open **http://localhost:8000**. The container listens on both IPv4 and IPv6, so `http://127.0.0.1:8000` and `http://[::1]:8000` also work. From another device on your LAN, open `http://<your-machine-ip>:8000`.
 
 The Dockerfile installs Node.js 22, CMake, Ninja, a C++ compiler, Python, and the UI test dependency. It builds a pinned SVF revision with LLVM 21.1.0 and Z3 4.15.4, compiles RefineIR, runs all examples plus the SMT, model, and DOM checks, and generates the presentation. You do not need to install these tools on the host.
 
@@ -40,7 +40,7 @@ Alternatively, with Python installed:
 python3 -m http.server 8000 --bind 0.0.0.0 --directory site/dist
 ```
 
-The presentation replays recorded checker runs; it does not compile programs in the browser. Rebuild when you want fresh analyses.
+This host-server command listens on IPv4: open `http://127.0.0.1:8000`. Use `--bind ::` for IPv4/IPv6 on a dual-stack host. The presentation replays recorded checker runs; it does not compile programs in the browser. Rebuild when you want fresh analyses.
 
 ## Build locally
 
@@ -56,6 +56,15 @@ sudo apt-get install -y build-essential cmake ninja-build git curl \
 node --version
 cmake --version  # Must be 3.23 or newer.
 ```
+
+On Fedora, the corresponding packages are:
+
+```bash
+sudo dnf install gcc-c++ cmake ninja-build git curl ca-certificates \
+  unzip xz zlib-ng-compat-devel libzstd-devel libxml2-devel ncurses-devel python3
+```
+
+Package installation requires administrator access. If you cannot use `sudo`, use the container path or an existing toolchain. The Fedora native build has not yet been verified; the container build is verified independently of host development packages.
 
 From the RefineIR repository root, build SVF in a sibling directory:
 
@@ -83,17 +92,25 @@ node scripts/package.mjs
 python3 -m http.server 8000 --bind 0.0.0.0 --directory site/dist
 ```
 
-Set these environment variables again in new shells. Explicit paths avoid the runner's development-machine defaults. The expected Z3 layout includes `include/z3++.h` and `bin/libz3.so`.
+The scripts default to `../SVF` relative to the repository, with LLVM and Z3 inside that directory. Set these environment variables in new shells when using a different layout. The expected Z3 layout includes `include/z3++.h` and `bin/libz3.so`. Missing dependencies produce an error identifying the path and environment variable to set.
 
 `run.mjs` builds `build/svf-cegar` and `build/smt-replay`, compiles the examples, records their analyses, and executes the real-bug witness. `package.mjs` generates the offline pages and TLA+ exports.
 
-| Example | Expected result | Refinements |
-| --- | --- | --- |
-| `contradiction` | SAFE | 1 |
-| `real-bug` | UNSAFE | 0 |
-| `arithmetic` | SAFE | 1 |
-| `two-refinements` | SAFE | 2 |
-| `unsupported-loop` | UNKNOWN | 0 |
+| Example | Expected result | Rounds | Refinements |
+| --- | --- | --- | --- |
+| `contradiction` | SAFE | 2 | 1 |
+| `real-bug` | UNSAFE | 1 | 0 |
+| `arithmetic` | SAFE | 2 | 1 |
+| `two-refinements` | SAFE | 3 | 2 |
+| `unsupported-loop` | UNKNOWN | 0 | 0 |
+
+A round checks one model, including the initial M0. A refinement changes the precision before the next round. The loop example is rejected before any round starts. The runner prints both counts.
+
+### Generated files and Git changes
+
+Generated demo files are committed so a fresh clone works without the toolchain. `run.mjs` rewrites `site/dist/data/` (including timestamps and toolchain provenance). `package.mjs` rewrites `site/dist/index.html`, `site/dist/cfg.html`, the three `refinement-lab*.html` pages, and `site/dist/models/`. Rebuilding can therefore leave Git changes; inspect them with `git status` and `git diff` before committing. Edit the scripts, CSS/JavaScript, and `site/dist/state-columns.html` template rather than generated HTML.
+
+The verification scripts write temporary artifacts under ignored `build/` or check existing data; they do not themselves repackage the tracked demo. Container runs without a host bind mount leave the host checkout unchanged.
 
 ## Use the presentation
 

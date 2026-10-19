@@ -3,7 +3,8 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import assert from 'node:assert/strict';
 import { resolve } from 'node:path';
 const root=resolve(import.meta.dirname,'..');
-const llvm=process.env.LLVM_ROOT||'/home/qfeng/Workspace/SVF/llvm-21.1.0.obj';
+const svf=process.env.SVF_ROOT||resolve(root,'../SVF');
+const llvm=process.env.LLVM_ROOT||`${svf}/llvm-21.1.0.obj`;
 function run(command,args) {
   const p=spawnSync(command,args,{cwd:root,encoding:'utf8'});
   assert.equal(p.status,0,p.stderr||p.error?.message);return p.stdout.trim();

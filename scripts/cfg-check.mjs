@@ -1,8 +1,9 @@
 import {createRequire} from 'node:module';
 import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
+import {resolve} from 'node:path';
 import assert from 'node:assert/strict';
 const require=createRequire(import.meta.url);
-const {JSDOM,VirtualConsole}=require(process.env.JSDOM_PATH||'/home/qfeng/Workspace/web/node_modules/jsdom');
+const {JSDOM,VirtualConsole}=require(process.env.JSDOM_PATH||resolve(import.meta.dirname,'../build/ui-tests/node_modules/jsdom'));
 const read=p=>readFileSync(new URL('../site/dist/'+p,import.meta.url),'utf8');
 const errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e));
 assert.equal(read('index.html'),read('cfg.html'),'Existing CFG bookmarks must keep working');

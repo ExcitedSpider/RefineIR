@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 import assert from 'node:assert/strict';
 const require=createRequire(import.meta.url);
 // Reuse an existing installation. This command does not install dependencies.
-const {JSDOM,VirtualConsole}=require(process.env.JSDOM_PATH||'/home/qfeng/Workspace/web/node_modules/jsdom');
+const {JSDOM,VirtualConsole}=require(process.env.JSDOM_PATH||resolve(import.meta.dirname,'../build/ui-tests/node_modules/jsdom'));
 const root=resolve(import.meta.dirname,'..'),errors=[];
 const vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e));
 const html=readFileSync(`${root}/site/dist/state-columns.html`,'utf8')
