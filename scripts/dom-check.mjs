@@ -16,15 +16,15 @@ const dom=new JSDOM(html,{runScripts:'dangerously',virtualConsole:vc});
 const {window:w}=dom,doc=w.document;
 const click=selector=>{const n=doc.querySelector(selector);assert.ok(n,selector);n.dispatchEvent(new w.MouseEvent('click',{bubbles:true}));};
 const text=id=>doc.getElementById(id).textContent;
-for(let i=0;i<5;i++) {
+for(let i=0;i<w.CEGAR_RESULTS.examples.length;i++) {
   click(`[data-example="${i}"]`);
   assert.equal(doc.querySelectorAll('[aria-selected="true"]').length,1);
   let count=0;
   while(!doc.getElementById('next').disabled) {click('#next');assert.ok(++count<20);}
-  assert.ok(text('state-badge').includes(['SAFE','SAT','SAFE','SAFE','UNKNOWN'][i]));
+  assert.ok(text('state-badge').includes(['SAFE','SAT','SAFE','SAFE','SAFE','UNKNOWN'][i]));
   if(i===1) {assert.equal(doc.querySelector('.witness').textContent,'x = 1');assert.ok(text('solver-content').includes('Confirmed by executing'));}
   if(i===3) assert.equal(doc.querySelectorAll('.predicate').length,2);
-  if(i<4) {
+  if(i<5) {
     click('[data-node]');assert.ok(doc.getElementById('node-inspector').open);assert.ok(text('node-detail').length>0);assert.doesNotMatch(text('node-inspector'),/ICFG|(?:node|Node)\s*\d/);
     click('[data-source="llvm"]');assert.match(text('source'),/define/);
     click('[data-source="c"]');assert.match(text('source'),/int main/);
@@ -40,7 +40,7 @@ assert.equal(doc.querySelectorAll('.graph-edge.cut').length,2);
 click('#show-smt');assert.ok(doc.getElementById('smt-output').classList.contains('visible'));
 // Inspect complete model snapshots and compare the last two iterations.
 const examples=w.CEGAR_RESULTS.examples;
-for(let i=0;i<4;i++) {
+for(let i=0;i<5;i++) {
   click(`[data-example="${i}"]`);
   assert.equal(doc.querySelectorAll('[data-model-round]').length,examples[i].rounds.length);
   if(!doc.getElementById('model-all-nodes').checked) {
@@ -84,7 +84,7 @@ assert.ok(doc.querySelector('#source .code-line.active'));
 doc.getElementById('model-rejected').checked=false;
 doc.getElementById('model-rejected').dispatchEvent(new w.Event('change'));
 assert.equal(doc.querySelectorAll('.model-transition.rejected').length,0);
-click('[data-example="4"]');assert.equal(doc.querySelectorAll('[data-abstract-state]').length,0);
+click('[data-example="5"]');assert.equal(doc.querySelectorAll('[data-abstract-state]').length,0);
 assert.match(text('model-change'),/No abstract model/);
 assert.equal(errors.length,0,errors.map(String).join('\n'));
 console.log('DOM checks passed: playback, evidence, every complete abstract model, before/after comparison, state inspection, all ICFG locations, rejected-edge toggle, and UNKNOWN handling. Use browser-review.py for rendered layout checks.');

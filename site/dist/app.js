@@ -5,7 +5,7 @@ const $ = id => document.getElementById(id);
 const esc = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const defaultSourceMode=window.CEGAR_SVF?'svf':'c';
 let exampleIndex = 0, stepIndex = 0, sourceMode = defaultSourceMode, selectedNode = null;
-const names = ['False alarm', 'Real bug', 'Arithmetic', 'Two refinements', 'The boundary'];
+const names = ['False alarm', 'Real bug', 'Arithmetic', 'Two refinements', 'x > y', 'The boundary'];
 function current() { return data.examples[exampleIndex]; }
 function inputNames(ex) {
   return Object.fromEntries((ex.inputs || []).map(input => {

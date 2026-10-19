@@ -106,9 +106,12 @@ The scripts default to `../SVF` relative to the repository, with LLVM and Z3 ins
 | `real-bug` | UNSAFE | 1 | 0 |
 | `arithmetic` | SAFE | 2 | 1 |
 | `two-refinements` | SAFE | 3 | 2 |
+| `relational` | SAFE | 2 | 1 |
 | `unsupported-loop` | UNKNOWN | 0 | 0 |
 
 A round checks one model, including the initial M0. A refinement changes the precision before the next round. The loop example is rejected before any round starts. The runner prints both counts.
+
+The **x > y** example uses two independent symbolic inputs. M0 admits a path through `x > y` and `x <= y`; Z3 proves their conjunction UNSAT. Refinement learns the single relational predicate `x > y` (the two conditions are complements), and M1 excludes the false error path. The predicate compares both inputs rather than an input with a constant.
 
 ### Generated files and Git changes
 

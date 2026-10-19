@@ -5,7 +5,7 @@ const root=resolve(import.meta.dirname,'..'),dist=`${root}/site/dist`;
 const read=p=>readFileSync(`${dist}/${p}`,'utf8');
 const original=read('state-columns.html');
 const cfg=original.replace('<body>','<body class="cfg-version">')
-  .replace(/<header class="topbar">.*?<\/header>/,'<header class="topbar compact-header"><a class="brand" href="#"><span class="brand-icon">↳</span> THE REFINEMENT LAB</a><h1>A program. A model. <em>One refinement.</em></h1><span class="header-stack">SVF → predicate abstraction → Z3</span><a href="#under-the-hood" class="quiet-link">How it works ↗</a></header>')
+  .replace(/<header class="topbar">.*?<\/header>/,'<header class="topbar compact-header"><a class="brand" href="#"><span class="brand-icon">↳</span> THE REFINEMENT LAB</a><h1>A program. A model. <em>One refinement.</em></h1><span class="header-stack">SVF → predicate abstraction → Z3</span><nav class="header-links" aria-label="Project links"><a href="https://github.com/ExcitedSpider/RefineIR" target="_blank" rel="noopener noreferrer" class="quiet-link">GitHub ↗</a><a href="#under-the-hood" class="quiet-link">How it works ↗</a></nav></header>')
   .replace(/\s*<section class="intro">.*?<\/section>/,'')
   .replace('<link rel="stylesheet" href="style.css">','<link rel="stylesheet" href="style.css"><link rel="stylesheet" href="cfg.css">')
   .replace('<script defer src="model.js"></script>','<script defer src="model.js"></script><script defer src="cfg.js"></script><script defer src="tla.js"></script>')

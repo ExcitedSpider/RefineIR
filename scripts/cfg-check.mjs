@@ -89,7 +89,7 @@ assert.ok(d.querySelector('.tla-line.changed'));
 assert.match(d.querySelector('.tla-status').textContent,/TLC has not been run/);
 assert.ok(d.querySelector('[download$=".tla"]').href.startsWith('data:text/plain'));
 click('[data-svf-block]');assert.ok(d.querySelector('.tla-code'),'Source selection preserves model view');
-click('[data-example="4"]');assert.ok(d.getElementById('view-tla').disabled);assert.equal(d.querySelectorAll('.tla-code').length,0);
+click('[data-example="5"]');assert.ok(d.getElementById('view-tla').disabled);assert.equal(d.querySelectorAll('.tla-code').length,0);
 click('[data-example="0"]');click('#view-cfg');assert.ok(d.querySelector('.cfg-svg'));
 assert.equal(errors.length,0,errors.map(String).join('\n'));
 console.log(`CFG checks passed: ${snapshots} snapshots, two-way SVF/CFG mapping, primary SVF source and reference tabs, fixed geometry, reachable facts, recorded transition filtering, keyboard playback, and archive links.`);

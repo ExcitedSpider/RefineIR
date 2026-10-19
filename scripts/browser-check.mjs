@@ -36,15 +36,15 @@ try {
   await send('Page.navigate',{url:`file://${root}/site/dist/state-columns.html`});
   await evaluate(`new Promise((resolve,reject)=>{let tries=0;const timer=setInterval(()=>{if(document.querySelector('[data-model-panel]')){clearInterval(timer);resolve();}else if(++tries>100){clearInterval(timer);reject(new Error('Presentation did not initialize'));}},50)})`);
   assert.equal(await evaluate('document.querySelector("#experiment-title").textContent'),'The impossible branch');
-  for(let i=0;i<5;i++) {
+  for(let i=0;i<6;i++) {
     await evaluate(`document.querySelector('[data-example="${i}"]').click()`);
     let steps=0;
     while(!await evaluate('document.querySelector("#next").disabled')) {await evaluate('document.querySelector("#next").click()');if(++steps>20)throw new Error('Playback did not terminate');}
     const badge=await evaluate('document.querySelector("#state-badge").textContent');
-    assert.ok(badge.includes(['SAFE','SAT','SAFE','SAFE','UNKNOWN'][i]),`Wrong final badge ${badge}`);
+    assert.ok(badge.includes(['SAFE','SAT','SAFE','SAFE','SAFE','UNKNOWN'][i]),`Wrong final badge ${badge}`);
     if(i===1) assert.equal(await evaluate('document.querySelector(".witness").textContent'),'x = 1');
     if(i===3) assert.equal(await evaluate('document.querySelectorAll(".predicate").length'),2);
-    if(i<4) {
+    if(i<5) {
       await evaluate('document.querySelector(".legacy-graph").open=true');
       await evaluate('document.querySelector("[data-node]").dispatchEvent(new MouseEvent("click",{bubbles:true}))');
       assert.ok(await evaluate('document.querySelector("#node-inspector").open'));

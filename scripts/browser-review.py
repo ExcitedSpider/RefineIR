@@ -71,7 +71,8 @@ try:
     for example, iteration, comparison, name in [
         (0, 0, False, 'm0'), (0, 1, False, 'm1'),
         (3, 2, False, 'm2'), (3, 2, True, 'comparison'),
-        (2, 1, False, 'arithmetic'), (1, 0, False, 'real-bug')
+        (2, 1, False, 'arithmetic'), (1, 0, False, 'real-bug'),
+        (4, 0, False, 'relational-m0'), (4, 1, False, 'relational-m1')
     ]:
         if CFG_VIEW and comparison:
             continue
@@ -121,13 +122,13 @@ try:
         image = call('Page.captureScreenshot', dict(format='png', captureBeyondViewport=False))
         (OUT / 'cfg-1920x1080-z3-session.png').write_bytes(base64.b64decode(image['data']))
         evaluate("document.querySelector('#z3-dialog header button').click()")
-        for example, iteration in [(0, 0), (0, 1), (3, 2)]:
+        for example, iteration in [(0, 0), (0, 1), (3, 2), (4, 1)]:
             evaluate(f"document.querySelectorAll('[data-example]')[{example}].click();document.querySelectorAll('[data-model-round]')[{iteration}].click();document.querySelector('#view-tla').click();window.scrollTo(0,0)")
             assert evaluate("Boolean(document.querySelector('.tla-code'))")
             assert evaluate("(()=>{const r=document.querySelector('.tla-panel').getBoundingClientRect();return r.x>=0&&r.y>=0&&r.right<=1920&&r.bottom<=1080})()")
             assert evaluate("document.querySelector('.tla-status').textContent.includes('TLC has not been run')")
             image = call('Page.captureScreenshot', dict(format='png', captureBeyondViewport=False))
-            (OUT / f'tla-1920x1080-m{iteration}.png').write_bytes(base64.b64decode(image['data']))
+            (OUT / f'tla-1920x1080-{example}-m{iteration}.png').write_bytes(base64.b64decode(image['data']))
             print(f'Captured TLA+ M{iteration}: model panel fits the viewport', flush=True)
 finally:
     browser.terminate()

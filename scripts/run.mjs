@@ -32,6 +32,7 @@ const examples = [
   ['real-bug', 'A real counterexample', 'One changed condition turns the alarm into a bug.', 'UNSAFE', 1],
   ['arithmetic', 'Follow the arithmetic', 'An unsigned addition connects two branch conditions.', 'SAFE', 2],
   ['two-refinements', 'Learn one fact at a time', 'Two independent contradictions need two refinements.', 'SAFE', 3],
+  ['relational', 'Remember a relation: x > y', 'Two symbolic inputs; one relational predicate rules out the false alarm.', 'SAFE', 2],
   ['unsupported-loop', 'Know the boundary', 'A loop is outside this first prototype.', 'UNKNOWN', 0],
 ];
 const results = [];

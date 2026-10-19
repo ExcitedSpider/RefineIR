@@ -1125,5 +1125,213 @@
     ],
     "expectedSafe": true,
     "tlcChecked": false
+  },
+  {
+    "example": "relational",
+    "round": 0,
+    "module": "relational_M0",
+    "source": "---- MODULE relational_M0 ----\nEXTENDS TLC\n\n\\* Recorded abstract model; pc denotes a displayed block end.\n\\* Straight-line steps collapsed. Predicates describe immutable inputs.\n\nVARIABLES pc\nvars == <<pc>>\n\nInit ==\n    /\\ pc = \"entry\"\n\nStep(from, to, enabled) ==\n    /\\ pc = from\n    /\\ enabled\n    /\\ pc' = to\n\nNext ==\n    \\/ Step(\"entry\", \"test x > y\", TRUE)\n    \\/ Step(\"test x > y\", \"test x <= y\", TRUE)\n    \\/ Step(\"test x > y\", \"return\", TRUE)\n    \\/ Step(\"test x <= y\", \"error after x <= y\", TRUE)\n    \\/ Step(\"test x <= y\", \"return\", TRUE)\n\nTypeOK ==\n    /\\ pc \\in {\"entry\", \"test x > y\", \"test x <= y\", \"return\", \"error after x <= y\"}\n\nNoError == pc \\notin {\"error after x <= y\"}\n\nSpec == Init /\\ [][Next]_vars\n====\n",
+    "configuration": "SPECIFICATION Spec\nINVARIANT TypeOK\nINVARIANT NoError\nCHECK_DEADLOCK FALSE\n",
+    "actions": [
+      {
+        "from": "entry",
+        "to": "test x > y",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          4
+        ]
+      },
+      {
+        "from": "test x > y",
+        "to": "test x <= y",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          6
+        ]
+      },
+      {
+        "from": "test x > y",
+        "to": "return",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          7,
+          9
+        ]
+      },
+      {
+        "from": "test x <= y",
+        "to": "error after x <= y",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          10
+        ]
+      },
+      {
+        "from": "test x <= y",
+        "to": "return",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          11,
+          14,
+          9
+        ]
+      }
+    ],
+    "states": [
+      {
+        "pc": "entry",
+        "mask": 0
+      },
+      {
+        "pc": "test x > y",
+        "mask": 0
+      },
+      {
+        "pc": "test x <= y",
+        "mask": 0
+      },
+      {
+        "pc": "return",
+        "mask": 0
+      },
+      {
+        "pc": "error after x <= y",
+        "mask": 0
+      }
+    ],
+    "initialMasks": [
+      0
+    ],
+    "entry": "entry",
+    "errors": [
+      "error after x <= y"
+    ],
+    "predicates": [],
+    "expectedSafe": false,
+    "tlcChecked": false
+  },
+  {
+    "example": "relational",
+    "round": 1,
+    "module": "relational_M1",
+    "source": "---- MODULE relational_M1 ----\nEXTENDS TLC\n\n\\* Recorded abstract model; pc denotes a displayed block end.\n\\* Straight-line steps collapsed. Predicates describe immutable inputs.\n\\* p0 represents: x > y\n\nVARIABLES pc, p0\nvars == <<pc, p0>>\n\nInit ==\n    /\\ pc = \"entry\"\n    /\\ <<p0>> \\in {<<FALSE>>, <<TRUE>>}\n\nStep(from, to, enabled) ==\n    /\\ pc = from\n    /\\ enabled\n    /\\ pc' = to\n    /\\ UNCHANGED <<p0>>\n\nNext ==\n    \\/ Step(\"entry\", \"test x > y\", TRUE)\n    \\/ Step(\"test x > y\", \"test x <= y\", p0)\n    \\/ Step(\"test x > y\", \"return\", ~p0)\n    \\/ Step(\"test x <= y\", \"error after x <= y\", FALSE)\n    \\/ Step(\"test x <= y\", \"return\", p0)\n\nTypeOK ==\n    /\\ pc \\in {\"entry\", \"test x > y\", \"test x <= y\", \"return\", \"error after x <= y\"}\n    /\\ p0 \\in BOOLEAN\n\nNoError == pc \\notin {\"error after x <= y\"}\n\nSpec == Init /\\ [][Next]_vars\n====\n",
+    "configuration": "SPECIFICATION Spec\nINVARIANT TypeOK\nINVARIANT NoError\nCHECK_DEADLOCK FALSE\n",
+    "actions": [
+      {
+        "from": "entry",
+        "to": "test x > y",
+        "masks": [
+          0,
+          1
+        ],
+        "guard": "TRUE",
+        "edges": [
+          4
+        ]
+      },
+      {
+        "from": "test x > y",
+        "to": "test x <= y",
+        "masks": [
+          1
+        ],
+        "guard": "p0",
+        "edges": [
+          6
+        ]
+      },
+      {
+        "from": "test x > y",
+        "to": "return",
+        "masks": [
+          0
+        ],
+        "guard": "~p0",
+        "edges": [
+          7,
+          9
+        ]
+      },
+      {
+        "from": "test x <= y",
+        "to": "error after x <= y",
+        "masks": [],
+        "guard": "FALSE",
+        "edges": [
+          10
+        ]
+      },
+      {
+        "from": "test x <= y",
+        "to": "return",
+        "masks": [
+          1
+        ],
+        "guard": "p0",
+        "edges": [
+          11,
+          14,
+          9
+        ]
+      }
+    ],
+    "states": [
+      {
+        "pc": "entry",
+        "mask": 0
+      },
+      {
+        "pc": "entry",
+        "mask": 1
+      },
+      {
+        "pc": "test x > y",
+        "mask": 0
+      },
+      {
+        "pc": "test x > y",
+        "mask": 1
+      },
+      {
+        "pc": "test x <= y",
+        "mask": 1
+      },
+      {
+        "pc": "return",
+        "mask": 0
+      },
+      {
+        "pc": "return",
+        "mask": 1
+      }
+    ],
+    "initialMasks": [
+      0,
+      1
+    ],
+    "entry": "entry",
+    "errors": [
+      "error after x <= y"
+    ],
+    "predicates": [
+      "input_0 > input_1"
+    ],
+    "expectedSafe": true,
+    "tlcChecked": false
   }
 ]
