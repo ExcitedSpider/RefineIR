@@ -1,0 +1,1129 @@
+[
+  {
+    "example": "contradiction",
+    "round": 0,
+    "module": "contradiction_M0",
+    "source": "---- MODULE contradiction_M0 ----\nEXTENDS TLC\n\n\\* Recorded abstract model; pc denotes a displayed block end.\n\\* Straight-line steps collapsed. Predicates describe immutable inputs.\n\nVARIABLES pc\nvars == <<pc>>\n\nInit ==\n    /\\ pc = \"entry\"\n\nStep(from, to, enabled) ==\n    /\\ pc = from\n    /\\ enabled\n    /\\ pc' = to\n\nNext ==\n    \\/ Step(\"entry\", \"test x > 0\", TRUE)\n    \\/ Step(\"test x > 0\", \"test x <= 0\", TRUE)\n    \\/ Step(\"test x > 0\", \"return\", TRUE)\n    \\/ Step(\"test x <= 0\", \"error after x <= 0\", TRUE)\n    \\/ Step(\"test x <= 0\", \"return\", TRUE)\n\nTypeOK ==\n    /\\ pc \\in {\"entry\", \"test x > 0\", \"test x <= 0\", \"return\", \"error after x <= 0\"}\n\nNoError == pc \\notin {\"error after x <= 0\"}\n\nSpec == Init /\\ [][Next]_vars\n====\n",
+    "configuration": "SPECIFICATION Spec\nINVARIANT TypeOK\nINVARIANT NoError\nCHECK_DEADLOCK FALSE\n",
+    "actions": [
+      {
+        "from": "entry",
+        "to": "test x > 0",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          2
+        ]
+      },
+      {
+        "from": "test x > 0",
+        "to": "test x <= 0",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          4
+        ]
+      },
+      {
+        "from": "test x > 0",
+        "to": "return",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          5,
+          7
+        ]
+      },
+      {
+        "from": "test x <= 0",
+        "to": "error after x <= 0",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          8
+        ]
+      },
+      {
+        "from": "test x <= 0",
+        "to": "return",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          9,
+          12,
+          7
+        ]
+      }
+    ],
+    "states": [
+      {
+        "pc": "entry",
+        "mask": 0
+      },
+      {
+        "pc": "test x > 0",
+        "mask": 0
+      },
+      {
+        "pc": "test x <= 0",
+        "mask": 0
+      },
+      {
+        "pc": "return",
+        "mask": 0
+      },
+      {
+        "pc": "error after x <= 0",
+        "mask": 0
+      }
+    ],
+    "initialMasks": [
+      0
+    ],
+    "entry": "entry",
+    "errors": [
+      "error after x <= 0"
+    ],
+    "predicates": [],
+    "expectedSafe": false,
+    "tlcChecked": false
+  },
+  {
+    "example": "contradiction",
+    "round": 1,
+    "module": "contradiction_M1",
+    "source": "---- MODULE contradiction_M1 ----\nEXTENDS TLC\n\n\\* Recorded abstract model; pc denotes a displayed block end.\n\\* Straight-line steps collapsed. Predicates describe immutable inputs.\n\\* p0 represents: x > 0\n\nVARIABLES pc, p0\nvars == <<pc, p0>>\n\nInit ==\n    /\\ pc = \"entry\"\n    /\\ <<p0>> \\in {<<FALSE>>, <<TRUE>>}\n\nStep(from, to, enabled) ==\n    /\\ pc = from\n    /\\ enabled\n    /\\ pc' = to\n    /\\ UNCHANGED <<p0>>\n\nNext ==\n    \\/ Step(\"entry\", \"test x > 0\", TRUE)\n    \\/ Step(\"test x > 0\", \"test x <= 0\", p0)\n    \\/ Step(\"test x > 0\", \"return\", ~p0)\n    \\/ Step(\"test x <= 0\", \"error after x <= 0\", FALSE)\n    \\/ Step(\"test x <= 0\", \"return\", p0)\n\nTypeOK ==\n    /\\ pc \\in {\"entry\", \"test x > 0\", \"test x <= 0\", \"return\", \"error after x <= 0\"}\n    /\\ p0 \\in BOOLEAN\n\nNoError == pc \\notin {\"error after x <= 0\"}\n\nSpec == Init /\\ [][Next]_vars\n====\n",
+    "configuration": "SPECIFICATION Spec\nINVARIANT TypeOK\nINVARIANT NoError\nCHECK_DEADLOCK FALSE\n",
+    "actions": [
+      {
+        "from": "entry",
+        "to": "test x > 0",
+        "masks": [
+          0,
+          1
+        ],
+        "guard": "TRUE",
+        "edges": [
+          2
+        ]
+      },
+      {
+        "from": "test x > 0",
+        "to": "test x <= 0",
+        "masks": [
+          1
+        ],
+        "guard": "p0",
+        "edges": [
+          4
+        ]
+      },
+      {
+        "from": "test x > 0",
+        "to": "return",
+        "masks": [
+          0
+        ],
+        "guard": "~p0",
+        "edges": [
+          5,
+          7
+        ]
+      },
+      {
+        "from": "test x <= 0",
+        "to": "error after x <= 0",
+        "masks": [],
+        "guard": "FALSE",
+        "edges": [
+          8
+        ]
+      },
+      {
+        "from": "test x <= 0",
+        "to": "return",
+        "masks": [
+          1
+        ],
+        "guard": "p0",
+        "edges": [
+          9,
+          12,
+          7
+        ]
+      }
+    ],
+    "states": [
+      {
+        "pc": "entry",
+        "mask": 0
+      },
+      {
+        "pc": "entry",
+        "mask": 1
+      },
+      {
+        "pc": "test x > 0",
+        "mask": 0
+      },
+      {
+        "pc": "test x > 0",
+        "mask": 1
+      },
+      {
+        "pc": "test x <= 0",
+        "mask": 1
+      },
+      {
+        "pc": "return",
+        "mask": 0
+      },
+      {
+        "pc": "return",
+        "mask": 1
+      }
+    ],
+    "initialMasks": [
+      0,
+      1
+    ],
+    "entry": "entry",
+    "errors": [
+      "error after x <= 0"
+    ],
+    "predicates": [
+      "input_0 > 0"
+    ],
+    "expectedSafe": true,
+    "tlcChecked": false
+  },
+  {
+    "example": "real-bug",
+    "round": 0,
+    "module": "real_bug_M0",
+    "source": "---- MODULE real_bug_M0 ----\nEXTENDS TLC\n\n\\* Recorded abstract model; pc denotes a displayed block end.\n\\* Straight-line steps collapsed. Predicates describe immutable inputs.\n\nVARIABLES pc\nvars == <<pc>>\n\nInit ==\n    /\\ pc = \"entry\"\n\nStep(from, to, enabled) ==\n    /\\ pc = from\n    /\\ enabled\n    /\\ pc' = to\n\nNext ==\n    \\/ Step(\"entry\", \"test x > 0\", TRUE)\n    \\/ Step(\"test x > 0\", \"test x == 1\", TRUE)\n    \\/ Step(\"test x > 0\", \"return\", TRUE)\n    \\/ Step(\"test x == 1\", \"error after x == 1\", TRUE)\n    \\/ Step(\"test x == 1\", \"return\", TRUE)\n\nTypeOK ==\n    /\\ pc \\in {\"entry\", \"test x > 0\", \"test x == 1\", \"return\", \"error after x == 1\"}\n\nNoError == pc \\notin {\"error after x == 1\"}\n\nSpec == Init /\\ [][Next]_vars\n====\n",
+    "configuration": "SPECIFICATION Spec\nINVARIANT TypeOK\nINVARIANT NoError\nCHECK_DEADLOCK FALSE\n",
+    "actions": [
+      {
+        "from": "entry",
+        "to": "test x > 0",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          2
+        ]
+      },
+      {
+        "from": "test x > 0",
+        "to": "test x == 1",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          4
+        ]
+      },
+      {
+        "from": "test x > 0",
+        "to": "return",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          5,
+          7
+        ]
+      },
+      {
+        "from": "test x == 1",
+        "to": "error after x == 1",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          8
+        ]
+      },
+      {
+        "from": "test x == 1",
+        "to": "return",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          9,
+          12,
+          7
+        ]
+      }
+    ],
+    "states": [
+      {
+        "pc": "entry",
+        "mask": 0
+      },
+      {
+        "pc": "test x > 0",
+        "mask": 0
+      },
+      {
+        "pc": "test x == 1",
+        "mask": 0
+      },
+      {
+        "pc": "return",
+        "mask": 0
+      },
+      {
+        "pc": "error after x == 1",
+        "mask": 0
+      }
+    ],
+    "initialMasks": [
+      0
+    ],
+    "entry": "entry",
+    "errors": [
+      "error after x == 1"
+    ],
+    "predicates": [],
+    "expectedSafe": false,
+    "tlcChecked": false
+  },
+  {
+    "example": "arithmetic",
+    "round": 0,
+    "module": "arithmetic_M0",
+    "source": "---- MODULE arithmetic_M0 ----\nEXTENDS TLC\n\n\\* Recorded abstract model; pc denotes a displayed block end.\n\\* Straight-line steps collapsed. Predicates describe immutable inputs.\n\nVARIABLES pc\nvars == <<pc>>\n\nInit ==\n    /\\ pc = \"entry\"\n\nStep(from, to, enabled) ==\n    /\\ pc = from\n    /\\ enabled\n    /\\ pc' = to\n\nNext ==\n    \\/ Step(\"entry\", \"compute y\", TRUE)\n    \\/ Step(\"compute y\", \"test x < 10\", TRUE)\n    \\/ Step(\"test x < 10\", \"test y > 20\", TRUE)\n    \\/ Step(\"test x < 10\", \"return\", TRUE)\n    \\/ Step(\"test y > 20\", \"error after y > 20\", TRUE)\n    \\/ Step(\"test y > 20\", \"return\", TRUE)\n\nTypeOK ==\n    /\\ pc \\in {\"entry\", \"compute y\", \"test x < 10\", \"test y > 20\", \"return\", \"error after y > 20\"}\n\nNoError == pc \\notin {\"error after y > 20\"}\n\nSpec == Init /\\ [][Next]_vars\n====\n",
+    "configuration": "SPECIFICATION Spec\nINVARIANT TypeOK\nINVARIANT NoError\nCHECK_DEADLOCK FALSE\n",
+    "actions": [
+      {
+        "from": "entry",
+        "to": "compute y",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          2
+        ]
+      },
+      {
+        "from": "compute y",
+        "to": "test x < 10",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          3
+        ]
+      },
+      {
+        "from": "test x < 10",
+        "to": "test y > 20",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          5
+        ]
+      },
+      {
+        "from": "test x < 10",
+        "to": "return",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          6,
+          8
+        ]
+      },
+      {
+        "from": "test y > 20",
+        "to": "error after y > 20",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          9
+        ]
+      },
+      {
+        "from": "test y > 20",
+        "to": "return",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          10,
+          13,
+          8
+        ]
+      }
+    ],
+    "states": [
+      {
+        "pc": "entry",
+        "mask": 0
+      },
+      {
+        "pc": "compute y",
+        "mask": 0
+      },
+      {
+        "pc": "test x < 10",
+        "mask": 0
+      },
+      {
+        "pc": "test y > 20",
+        "mask": 0
+      },
+      {
+        "pc": "return",
+        "mask": 0
+      },
+      {
+        "pc": "error after y > 20",
+        "mask": 0
+      }
+    ],
+    "initialMasks": [
+      0
+    ],
+    "entry": "entry",
+    "errors": [
+      "error after y > 20"
+    ],
+    "predicates": [],
+    "expectedSafe": false,
+    "tlcChecked": false
+  },
+  {
+    "example": "arithmetic",
+    "round": 1,
+    "module": "arithmetic_M1",
+    "source": "---- MODULE arithmetic_M1 ----\nEXTENDS TLC\n\n\\* Recorded abstract model; pc denotes a displayed block end.\n\\* Straight-line steps collapsed. Predicates describe immutable inputs.\n\\* p0 represents: x <u 10\n\\* p1 represents: (x + 1) >u 20\n\nVARIABLES pc, p0, p1\nvars == <<pc, p0, p1>>\n\nInit ==\n    /\\ pc = \"entry\"\n    /\\ <<p0, p1>> \\in {<<FALSE, FALSE>>, <<TRUE, FALSE>>, <<FALSE, TRUE>>}\n\nStep(from, to, enabled) ==\n    /\\ pc = from\n    /\\ enabled\n    /\\ pc' = to\n    /\\ UNCHANGED <<p0, p1>>\n\nNext ==\n    \\/ Step(\"entry\", \"compute y\", ~p1 \\/ ~p0)\n    \\/ Step(\"compute y\", \"test x < 10\", ~p1 \\/ ~p0)\n    \\/ Step(\"test x < 10\", \"test y > 20\", (p0 /\\ ~p1))\n    \\/ Step(\"test x < 10\", \"return\", ~p0)\n    \\/ Step(\"test y > 20\", \"error after y > 20\", FALSE)\n    \\/ Step(\"test y > 20\", \"return\", (p0 /\\ ~p1))\n\nTypeOK ==\n    /\\ pc \\in {\"entry\", \"compute y\", \"test x < 10\", \"test y > 20\", \"return\", \"error after y > 20\"}\n    /\\ p0 \\in BOOLEAN\n    /\\ p1 \\in BOOLEAN\n\nNoError == pc \\notin {\"error after y > 20\"}\n\nSpec == Init /\\ [][Next]_vars\n====\n",
+    "configuration": "SPECIFICATION Spec\nINVARIANT TypeOK\nINVARIANT NoError\nCHECK_DEADLOCK FALSE\n",
+    "actions": [
+      {
+        "from": "entry",
+        "to": "compute y",
+        "masks": [
+          0,
+          1,
+          2
+        ],
+        "guard": "~p1 \\/ ~p0",
+        "edges": [
+          2
+        ]
+      },
+      {
+        "from": "compute y",
+        "to": "test x < 10",
+        "masks": [
+          0,
+          1,
+          2
+        ],
+        "guard": "~p1 \\/ ~p0",
+        "edges": [
+          3
+        ]
+      },
+      {
+        "from": "test x < 10",
+        "to": "test y > 20",
+        "masks": [
+          1
+        ],
+        "guard": "(p0 /\\ ~p1)",
+        "edges": [
+          5
+        ]
+      },
+      {
+        "from": "test x < 10",
+        "to": "return",
+        "masks": [
+          0,
+          2
+        ],
+        "guard": "~p0",
+        "edges": [
+          6,
+          8
+        ]
+      },
+      {
+        "from": "test y > 20",
+        "to": "error after y > 20",
+        "masks": [],
+        "guard": "FALSE",
+        "edges": [
+          9
+        ]
+      },
+      {
+        "from": "test y > 20",
+        "to": "return",
+        "masks": [
+          1
+        ],
+        "guard": "(p0 /\\ ~p1)",
+        "edges": [
+          10,
+          13,
+          8
+        ]
+      }
+    ],
+    "states": [
+      {
+        "pc": "entry",
+        "mask": 0
+      },
+      {
+        "pc": "entry",
+        "mask": 1
+      },
+      {
+        "pc": "entry",
+        "mask": 2
+      },
+      {
+        "pc": "compute y",
+        "mask": 0
+      },
+      {
+        "pc": "compute y",
+        "mask": 1
+      },
+      {
+        "pc": "compute y",
+        "mask": 2
+      },
+      {
+        "pc": "test x < 10",
+        "mask": 0
+      },
+      {
+        "pc": "test x < 10",
+        "mask": 1
+      },
+      {
+        "pc": "test x < 10",
+        "mask": 2
+      },
+      {
+        "pc": "test y > 20",
+        "mask": 1
+      },
+      {
+        "pc": "return",
+        "mask": 0
+      },
+      {
+        "pc": "return",
+        "mask": 2
+      },
+      {
+        "pc": "return",
+        "mask": 1
+      }
+    ],
+    "initialMasks": [
+      0,
+      1,
+      2
+    ],
+    "entry": "entry",
+    "errors": [
+      "error after y > 20"
+    ],
+    "predicates": [
+      "input_0 <u 10",
+      "(input_0 + 1) >u 20"
+    ],
+    "expectedSafe": true,
+    "tlcChecked": false
+  },
+  {
+    "example": "two-refinements",
+    "round": 0,
+    "module": "two_refinements_M0",
+    "source": "---- MODULE two_refinements_M0 ----\nEXTENDS TLC\n\n\\* Recorded abstract model; pc denotes a displayed block end.\n\\* Straight-line steps collapsed. Predicates describe immutable inputs.\n\nVARIABLES pc\nvars == <<pc>>\n\nInit ==\n    /\\ pc = \"entry\"\n\nStep(from, to, enabled) ==\n    /\\ pc = from\n    /\\ enabled\n    /\\ pc' = to\n\nNext ==\n    \\/ Step(\"entry\", \"test x > 0\", TRUE)\n    \\/ Step(\"test x > 0\", \"test x <= 0\", TRUE)\n    \\/ Step(\"test x > 0\", \"test y > 10\", TRUE)\n    \\/ Step(\"test x <= 0\", \"error after x <= 0\", TRUE)\n    \\/ Step(\"test x <= 0\", \"test y > 10\", TRUE)\n    \\/ Step(\"test y > 10\", \"test y <= 10\", TRUE)\n    \\/ Step(\"test y > 10\", \"return\", TRUE)\n    \\/ Step(\"test y <= 10\", \"error after y <= 10\", TRUE)\n    \\/ Step(\"test y <= 10\", \"return\", TRUE)\n\nTypeOK ==\n    /\\ pc \\in {\"entry\", \"test x > 0\", \"test x <= 0\", \"error after x <= 0\", \"test y > 10\", \"test y <= 10\", \"return\", \"error after y <= 10\"}\n\nNoError == pc \\notin {\"error after x <= 0\", \"error after y <= 10\"}\n\nSpec == Init /\\ [][Next]_vars\n====\n",
+    "configuration": "SPECIFICATION Spec\nINVARIANT TypeOK\nINVARIANT NoError\nCHECK_DEADLOCK FALSE\n",
+    "actions": [
+      {
+        "from": "entry",
+        "to": "test x > 0",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          4
+        ]
+      },
+      {
+        "from": "test x > 0",
+        "to": "test x <= 0",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          6
+        ]
+      },
+      {
+        "from": "test x > 0",
+        "to": "test y > 10",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          7
+        ]
+      },
+      {
+        "from": "test x <= 0",
+        "to": "error after x <= 0",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          10
+        ]
+      },
+      {
+        "from": "test x <= 0",
+        "to": "test y > 10",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          11,
+          16
+        ]
+      },
+      {
+        "from": "test y > 10",
+        "to": "test y <= 10",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          12
+        ]
+      },
+      {
+        "from": "test y > 10",
+        "to": "return",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          13,
+          18
+        ]
+      },
+      {
+        "from": "test y <= 10",
+        "to": "error after y <= 10",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          20
+        ]
+      },
+      {
+        "from": "test y <= 10",
+        "to": "return",
+        "masks": [
+          0
+        ],
+        "guard": "TRUE",
+        "edges": [
+          21,
+          24,
+          18
+        ]
+      }
+    ],
+    "states": [
+      {
+        "pc": "entry",
+        "mask": 0
+      },
+      {
+        "pc": "test x > 0",
+        "mask": 0
+      },
+      {
+        "pc": "test x <= 0",
+        "mask": 0
+      },
+      {
+        "pc": "error after x <= 0",
+        "mask": 0
+      },
+      {
+        "pc": "test y > 10",
+        "mask": 0
+      },
+      {
+        "pc": "test y <= 10",
+        "mask": 0
+      },
+      {
+        "pc": "return",
+        "mask": 0
+      },
+      {
+        "pc": "error after y <= 10",
+        "mask": 0
+      }
+    ],
+    "initialMasks": [
+      0
+    ],
+    "entry": "entry",
+    "errors": [
+      "error after x <= 0",
+      "error after y <= 10"
+    ],
+    "predicates": [],
+    "expectedSafe": false,
+    "tlcChecked": false
+  },
+  {
+    "example": "two-refinements",
+    "round": 1,
+    "module": "two_refinements_M1",
+    "source": "---- MODULE two_refinements_M1 ----\nEXTENDS TLC\n\n\\* Recorded abstract model; pc denotes a displayed block end.\n\\* Straight-line steps collapsed. Predicates describe immutable inputs.\n\\* p0 represents: x > 0\n\nVARIABLES pc, p0\nvars == <<pc, p0>>\n\nInit ==\n    /\\ pc = \"entry\"\n    /\\ <<p0>> \\in {<<FALSE>>, <<TRUE>>}\n\nStep(from, to, enabled) ==\n    /\\ pc = from\n    /\\ enabled\n    /\\ pc' = to\n    /\\ UNCHANGED <<p0>>\n\nNext ==\n    \\/ Step(\"entry\", \"test x > 0\", TRUE)\n    \\/ Step(\"test x > 0\", \"test x <= 0\", p0)\n    \\/ Step(\"test x > 0\", \"test y > 10\", ~p0)\n    \\/ Step(\"test x <= 0\", \"error after x <= 0\", FALSE)\n    \\/ Step(\"test x <= 0\", \"test y > 10\", p0)\n    \\/ Step(\"test y > 10\", \"test y <= 10\", TRUE)\n    \\/ Step(\"test y > 10\", \"return\", TRUE)\n    \\/ Step(\"test y <= 10\", \"error after y <= 10\", TRUE)\n    \\/ Step(\"test y <= 10\", \"return\", TRUE)\n\nTypeOK ==\n    /\\ pc \\in {\"entry\", \"test x > 0\", \"test x <= 0\", \"error after x <= 0\", \"test y > 10\", \"test y <= 10\", \"return\", \"error after y <= 10\"}\n    /\\ p0 \\in BOOLEAN\n\nNoError == pc \\notin {\"error after x <= 0\", \"error after y <= 10\"}\n\nSpec == Init /\\ [][Next]_vars\n====\n",
+    "configuration": "SPECIFICATION Spec\nINVARIANT TypeOK\nINVARIANT NoError\nCHECK_DEADLOCK FALSE\n",
+    "actions": [
+      {
+        "from": "entry",
+        "to": "test x > 0",
+        "masks": [
+          0,
+          1
+        ],
+        "guard": "TRUE",
+        "edges": [
+          4
+        ]
+      },
+      {
+        "from": "test x > 0",
+        "to": "test x <= 0",
+        "masks": [
+          1
+        ],
+        "guard": "p0",
+        "edges": [
+          6
+        ]
+      },
+      {
+        "from": "test x > 0",
+        "to": "test y > 10",
+        "masks": [
+          0
+        ],
+        "guard": "~p0",
+        "edges": [
+          7
+        ]
+      },
+      {
+        "from": "test x <= 0",
+        "to": "error after x <= 0",
+        "masks": [],
+        "guard": "FALSE",
+        "edges": [
+          10
+        ]
+      },
+      {
+        "from": "test x <= 0",
+        "to": "test y > 10",
+        "masks": [
+          1
+        ],
+        "guard": "p0",
+        "edges": [
+          11,
+          16
+        ]
+      },
+      {
+        "from": "test y > 10",
+        "to": "test y <= 10",
+        "masks": [
+          0,
+          1
+        ],
+        "guard": "TRUE",
+        "edges": [
+          12
+        ]
+      },
+      {
+        "from": "test y > 10",
+        "to": "return",
+        "masks": [
+          0,
+          1
+        ],
+        "guard": "TRUE",
+        "edges": [
+          13,
+          18
+        ]
+      },
+      {
+        "from": "test y <= 10",
+        "to": "error after y <= 10",
+        "masks": [
+          0,
+          1
+        ],
+        "guard": "TRUE",
+        "edges": [
+          20
+        ]
+      },
+      {
+        "from": "test y <= 10",
+        "to": "return",
+        "masks": [
+          0,
+          1
+        ],
+        "guard": "TRUE",
+        "edges": [
+          21,
+          24,
+          18
+        ]
+      }
+    ],
+    "states": [
+      {
+        "pc": "entry",
+        "mask": 0
+      },
+      {
+        "pc": "entry",
+        "mask": 1
+      },
+      {
+        "pc": "test x > 0",
+        "mask": 0
+      },
+      {
+        "pc": "test x > 0",
+        "mask": 1
+      },
+      {
+        "pc": "test x <= 0",
+        "mask": 1
+      },
+      {
+        "pc": "test y > 10",
+        "mask": 0
+      },
+      {
+        "pc": "test y > 10",
+        "mask": 1
+      },
+      {
+        "pc": "test y <= 10",
+        "mask": 0
+      },
+      {
+        "pc": "test y <= 10",
+        "mask": 1
+      },
+      {
+        "pc": "return",
+        "mask": 0
+      },
+      {
+        "pc": "return",
+        "mask": 1
+      },
+      {
+        "pc": "error after y <= 10",
+        "mask": 0
+      },
+      {
+        "pc": "error after y <= 10",
+        "mask": 1
+      }
+    ],
+    "initialMasks": [
+      0,
+      1
+    ],
+    "entry": "entry",
+    "errors": [
+      "error after x <= 0",
+      "error after y <= 10"
+    ],
+    "predicates": [
+      "input_0 > 0"
+    ],
+    "expectedSafe": false,
+    "tlcChecked": false
+  },
+  {
+    "example": "two-refinements",
+    "round": 2,
+    "module": "two_refinements_M2",
+    "source": "---- MODULE two_refinements_M2 ----\nEXTENDS TLC\n\n\\* Recorded abstract model; pc denotes a displayed block end.\n\\* Straight-line steps collapsed. Predicates describe immutable inputs.\n\\* p0 represents: x > 0\n\\* p1 represents: y > 10\n\nVARIABLES pc, p0, p1\nvars == <<pc, p0, p1>>\n\nInit ==\n    /\\ pc = \"entry\"\n    /\\ <<p0, p1>> \\in {<<FALSE, FALSE>>, <<TRUE, FALSE>>, <<FALSE, TRUE>>, <<TRUE, TRUE>>}\n\nStep(from, to, enabled) ==\n    /\\ pc = from\n    /\\ enabled\n    /\\ pc' = to\n    /\\ UNCHANGED <<p0, p1>>\n\nNext ==\n    \\/ Step(\"entry\", \"test x > 0\", TRUE)\n    \\/ Step(\"test x > 0\", \"test x <= 0\", p0)\n    \\/ Step(\"test x > 0\", \"test y > 10\", ~p0)\n    \\/ Step(\"test x <= 0\", \"error after x <= 0\", FALSE)\n    \\/ Step(\"test x <= 0\", \"test y > 10\", p0)\n    \\/ Step(\"test y > 10\", \"test y <= 10\", p1)\n    \\/ Step(\"test y > 10\", \"return\", ~p1)\n    \\/ Step(\"test y <= 10\", \"error after y <= 10\", FALSE)\n    \\/ Step(\"test y <= 10\", \"return\", p1)\n\nTypeOK ==\n    /\\ pc \\in {\"entry\", \"test x > 0\", \"test x <= 0\", \"error after x <= 0\", \"test y > 10\", \"test y <= 10\", \"return\", \"error after y <= 10\"}\n    /\\ p0 \\in BOOLEAN\n    /\\ p1 \\in BOOLEAN\n\nNoError == pc \\notin {\"error after x <= 0\", \"error after y <= 10\"}\n\nSpec == Init /\\ [][Next]_vars\n====\n",
+    "configuration": "SPECIFICATION Spec\nINVARIANT TypeOK\nINVARIANT NoError\nCHECK_DEADLOCK FALSE\n",
+    "actions": [
+      {
+        "from": "entry",
+        "to": "test x > 0",
+        "masks": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "guard": "TRUE",
+        "edges": [
+          4
+        ]
+      },
+      {
+        "from": "test x > 0",
+        "to": "test x <= 0",
+        "masks": [
+          1,
+          3
+        ],
+        "guard": "p0",
+        "edges": [
+          6
+        ]
+      },
+      {
+        "from": "test x > 0",
+        "to": "test y > 10",
+        "masks": [
+          0,
+          2
+        ],
+        "guard": "~p0",
+        "edges": [
+          7
+        ]
+      },
+      {
+        "from": "test x <= 0",
+        "to": "error after x <= 0",
+        "masks": [],
+        "guard": "FALSE",
+        "edges": [
+          10
+        ]
+      },
+      {
+        "from": "test x <= 0",
+        "to": "test y > 10",
+        "masks": [
+          1,
+          3
+        ],
+        "guard": "p0",
+        "edges": [
+          11,
+          16
+        ]
+      },
+      {
+        "from": "test y > 10",
+        "to": "test y <= 10",
+        "masks": [
+          2,
+          3
+        ],
+        "guard": "p1",
+        "edges": [
+          12
+        ]
+      },
+      {
+        "from": "test y > 10",
+        "to": "return",
+        "masks": [
+          0,
+          1
+        ],
+        "guard": "~p1",
+        "edges": [
+          13,
+          18
+        ]
+      },
+      {
+        "from": "test y <= 10",
+        "to": "error after y <= 10",
+        "masks": [],
+        "guard": "FALSE",
+        "edges": [
+          20
+        ]
+      },
+      {
+        "from": "test y <= 10",
+        "to": "return",
+        "masks": [
+          2,
+          3
+        ],
+        "guard": "p1",
+        "edges": [
+          21,
+          24,
+          18
+        ]
+      }
+    ],
+    "states": [
+      {
+        "pc": "entry",
+        "mask": 0
+      },
+      {
+        "pc": "entry",
+        "mask": 1
+      },
+      {
+        "pc": "entry",
+        "mask": 2
+      },
+      {
+        "pc": "entry",
+        "mask": 3
+      },
+      {
+        "pc": "test x > 0",
+        "mask": 0
+      },
+      {
+        "pc": "test x > 0",
+        "mask": 1
+      },
+      {
+        "pc": "test x > 0",
+        "mask": 2
+      },
+      {
+        "pc": "test x > 0",
+        "mask": 3
+      },
+      {
+        "pc": "test x <= 0",
+        "mask": 1
+      },
+      {
+        "pc": "test x <= 0",
+        "mask": 3
+      },
+      {
+        "pc": "test y > 10",
+        "mask": 0
+      },
+      {
+        "pc": "test y > 10",
+        "mask": 2
+      },
+      {
+        "pc": "test y > 10",
+        "mask": 1
+      },
+      {
+        "pc": "test y > 10",
+        "mask": 3
+      },
+      {
+        "pc": "test y <= 10",
+        "mask": 2
+      },
+      {
+        "pc": "test y <= 10",
+        "mask": 3
+      },
+      {
+        "pc": "return",
+        "mask": 0
+      },
+      {
+        "pc": "return",
+        "mask": 1
+      },
+      {
+        "pc": "return",
+        "mask": 2
+      },
+      {
+        "pc": "return",
+        "mask": 3
+      }
+    ],
+    "initialMasks": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "entry": "entry",
+    "errors": [
+      "error after x <= 0",
+      "error after y <= 10"
+    ],
+    "predicates": [
+      "input_0 > 0",
+      "input_1 > 10"
+    ],
+    "expectedSafe": true,
+    "tlcChecked": false
+  }
+]

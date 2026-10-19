@@ -1,0 +1,7 @@
+build/
+site/.git/
+site/.openai/
+.agents/
+.codex/
+.aws/
+*.tar.gz

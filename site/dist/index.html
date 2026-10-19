@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f4f3ed">
+  <title>SVF × CEGAR — The refinement lab</title>
+  <meta name="description" content="Watch a real model checker learn which program paths are impossible. An interactive SVF and Z3 experiment.">
+  <link rel="stylesheet" href="style.css"><link rel="stylesheet" href="cfg.css">
+  <script defer src="data/results.js"></script>
+  <script defer src="model.js"></script><script defer src="cfg.js"></script><script defer src="tla.js"></script>
+  <script defer src="app.js"></script>
+  <script defer src="reload.js"></script>
+</head>
+<body class="cfg-version">
+<header class="topbar compact-header"><a class="brand" href="#"><span class="brand-icon">↳</span> THE REFINEMENT LAB</a><h1>A program. A model. <em>One refinement.</em></h1><span class="header-stack">SVF → predicate abstraction → Z3</span><a href="#under-the-hood" class="quiet-link">How it works ↗</a></header>
+<main>
+  <section class="lab" aria-label="Interactive CEGAR walkthrough">
+    <div class="experiment-tabs" role="tablist" aria-label="Choose an experiment" id="examples"></div>
+    <div class="experiment-heading"><div><h2 id="experiment-title"></h2><p id="experiment-subtitle"></p></div><div class="experiment-actions"><a href="state-columns.html" data-presentation class="presentation-link">Archived state-column view ↗</a><button id="download" class="text-button">Download evidence ↓</button></div></div>
+    <div class="iteration-toolbar"><span class="eyebrow">ITERATION</span><div class="model-rounds" id="model-rounds" role="group" aria-label="Choose model iteration"></div><span class="iteration-hint">Choose a round · ← → step through</span></div>
+    <div class="workspace">
+      <section class="source-pane"><div class="pane-heading"><h3>THE PROGRAM · SVF IR</h3><span id="file-name"></span></div><div class="source-tabs"><button class="active" data-source="svf">SVF program</button><button data-source="c">C reference</button><button data-source="llvm">LLVM reference</button></div><div class="code-wrap"><pre id="source" aria-label="Program source"></pre></div><div class="source-footer"><span class="key">↳</span><span id="input-note">Inputs can be any 32-bit integer.</span></div></section>
+      <section id="model-lab" class="model-explorer" aria-label="Abstract program models by iteration">
+        <div class="pane-heading"><h3>CFG WITH SVF OPERATIONS</h3><div class="model-mode" role="group" aria-label="Model comparison"><button id="view-cfg" aria-pressed="true">CFG</button><button id="view-tla" aria-pressed="false">TLA+ model</button><button id="model-single" aria-pressed="true">One model</button><button id="model-compare" aria-pressed="false">Before / after</button></div></div>
+        <div class="model-options"><p>Blocks: SVF operations · arrows: selected facts</p><label><input id="model-rejected" type="checkbox" checked> Rejected edges</label><label><input id="model-all-nodes" type="checkbox"> All program steps</label></div>
+        <div id="model-canvases" class="model-canvases"></div>
+        <div class="model-bottom"><div class="model-key"><span><i class="model-key-state"></i> Reachable state</span><span><i class="model-key-ghost"></i> Unreachable</span><span><i class="legend-line path"></i> Candidate</span><span><i class="legend-line blocked"></i> Rejected</span></div></div>
+      </section>
+      <section class="reasoning-pane" aria-live="polite"><div class="pane-heading"><h3>PREDICATES & REASONING</h3><span id="round-label"></span></div><div class="reasoning-content"><div class="knowledge"><div class="eyebrow">TRACKED PREDICATES</div><div id="predicates"></div></div><div class="model-change" id="model-change"></div><div id="state-badge" class="state-badge"></div><h3 id="step-title"></h3><p id="step-description"></p><div id="solver-content"></div><div id="model-state-detail" class="model-state-detail">Select a model state to inspect its facts. Its source line will highlight on the left.</div></div></section>
+    </div>
+    <div class="playback"><button id="previous" aria-label="Previous step">←</button><button id="next" class="primary">Find a candidate path <span>→</span></button><div class="timeline" id="timeline" aria-label="Walkthrough steps"></div><span id="step-count"></span><button id="reset" class="text-button" aria-label="Reset walkthrough">↺ Reset</button></div>
+    <div class="lab-caption"><span>Program structure comes from SVF; predicates refine the model.</span><span>Replay of completed analyses. No compiler runs in your browser.</span></div>
+  </section>
+  <details class="legacy-graph"><summary>Inspect the original control-flow graph</summary><section class="graph-pane"><div class="pane-heading"><h3>CONTROL FLOW · BEFORE ABSTRACTION</h3><span>click a statement to inspect</span></div><div id="graph" class="graph-area"></div><details class="node-inspector" id="node-inspector"><summary id="node-title">Inspect a program step</summary><pre id="node-detail">Select a statement to see its source and possible next steps.</pre></details></section></details>
+  <section class="explanation" id="under-the-hood">
+    <div class="section-intro"><div class="eyebrow">02 / THE IDEA</div><h2>Forget details.<br>Keep the possibilities.</h2><p>An abstraction includes every real execution—and sometimes a few impossible ones. Refinement teaches it which distinctions matter.</p></div>
+    <div class="loop-explanation"><article><span class="step-index">01</span><div><h3>Explore a simpler model</h3><p>Initially, no relationships between branch conditions are remembered. Each individually feasible branch can be taken.</p></div></article><article><span class="step-index">02</span><div><h3>Put the whole path on trial</h3><p>Z3 checks all its branch constraints together. SAT gives an input that reaches the error. UNSAT exposes a false alarm.</p></div></article><article><span class="step-index">03</span><div><h3>Remember one useful fact</h3><p>Add a predicate from the rejected path and explore again. States now distinguish whether that fact is true or false.</p></div></article><div class="loop-foot">↺ Repeat until the error is unreachable, a real bug is found, or the checker reaches its limits.</div></div>
+  </section>
+  <section class="evidence-section"><div class="evidence-title"><div class="eyebrow">03 / UNDER THE HOOD</div><h2>Small scope. Real machinery.</h2><p>A C++ checker built against an existing SVF toolchain. Every verdict above was produced by an actual analysis run.</p></div><div class="evidence-grid"><article><h3>What SVF contributes</h3><p>The interprocedural control-flow graph and its attached statements. Comparisons and arithmetic are translated from <code>CmpStmt</code> and <code>BinaryOPStmt</code>; LLVM supplies integer widths, constants, and source locations.</p><a href="https://svf-tools.github.io/SVF-doxygen/html/classSVF_1_1SVFIR.html" target="_blank" rel="noreferrer">Explore SVF IR ↗</a></article><article><h3>What we added</h3><p>Boolean predicate valuations, abstract reachability, complete path checks, and refinement. In this acyclic subset, expressions expand to immutable inputs, so predicates keep their meaning across the graph.</p><a href="https://cpachecker.sosy-lab.org/doc.php" target="_blank" rel="noreferrer">Background on predicate analysis ↗</a></article><article><h3>Where it stops</h3><p>32-bit inputs; bit-vector arithmetic. No loops, memory, general function calls, or value-merging phi instructions yet. Unsupported input returns <code>UNKNOWN</code>. SAFE means safe within this supported model.</p><a href="https://z3prover.github.io/papers/programmingz3.html" target="_blank" rel="noreferrer">How Z3 checks constraints ↗</a></article></div><details class="run-details"><summary>Inspect this run’s provenance and solver evidence</summary><div id="provenance"></div><div class="raw-actions"><button id="show-smt" class="text-button">Current round’s SMT-LIB</button><a href="data/results.json" download>All recorded results ↓</a></div><pre id="smt-output"></pre></details></section>
+  <section class="next-chapter"><div><div class="eyebrow">NEXT EXPERIMENT</div><h2>What if the missing fact<br>is where a pointer points?</h2></div><p>SVF’s pointer analysis makes that a natural next step: split an ambiguous pointer target, preserve which object a store updates, and watch another false alarm disappear.<br><span>Planned exploration · not implemented in this demo</span></p></section>
+</main>
+<footer><span>SVF × CEGAR <span class="muted">/ An exploration, not a production verifier.</span></span><a href="#">Back to the experiment ↑</a></footer>
+</body>
+</html>
