@@ -44,6 +44,8 @@ This host-server command listens on IPv4: open `http://127.0.0.1:8000`. Use `--b
 
 ## Build locally
 
+For public hosting without a container, see [Cloudflare Pages deployment](#deploy-to-cloudflare-pages).
+
 The runner currently targets Linux and expects the toolchain layout below. The dependency versions used by this project are **SVF 3.4, LLVM 21.1.0, and Z3 4.15.4**.
 
 Install Node.js 22 or 24 from [nodejs.org](https://nodejs.org/en/download). The scripts require at least Node.js 20.11. On Ubuntu 24.04, install the remaining build tools:
@@ -120,7 +122,26 @@ The verification scripts write temporary artifacts under ignored `build/` or che
 - Switch to **TLA+ model** to see the abstract transition relation and changes between iterations.
 - At the UNSAT/refinement step, click **Z3 input → output** in the right panel for the query and returned core. In example 01, press **→ twice** from the start.
 
-The LAN page reloads automatically when its local HTML, CSS, JavaScript, or data changes.
+The LAN page reloads automatically when its local HTML, CSS, JavaScript, or data changes. Polling is enabled on localhost, private IPv4 addresses, and `.local` hostnames. For another development hostname, append `?live-reload=1`. Public deployments do not poll by default.
+
+## Deploy to Cloudflare Pages
+
+In [Cloudflare's dashboard](https://dash.cloudflare.com/), open **Workers & Pages → Create application → Pages → Import an existing Git repository**. Connect GitHub and select `ExcitedSpider/RefineIR`.
+
+| Setting | Value |
+| --- | --- |
+| Project name | `refineir` (or another available name) |
+| Production branch | `main` |
+| Framework preset | None |
+| Build command | `exit 0` |
+| Build output directory | `site/dist` |
+| Root directory | Repository root (leave blank) |
+
+Select **Save and Deploy**. The committed presentation already includes the recorded analyses; Cloudflare does not need to build SVF or run Docker. Pushes to `main` redeploy it automatically.
+
+After the `*.pages.dev` URL works, open the project's **Custom domains → Set up a custom domain**, enter **`svfcegar.qiuyif.org`**, and confirm Cloudflare's proposed DNS record. Add the domain through Pages before creating a CNAME manually. Wait for domain activation and HTTPS provisioning, then visit `https://svfcegar.qiuyif.org`.
+
+This deployment uses static Pages hosting with no Functions, Workers, database, or container charges. See Cloudflare's [static HTML guide](https://developers.cloudflare.com/pages/framework-guides/deploy-anything/) and [custom domain guide](https://developers.cloudflare.com/pages/configuration/custom-domains/).
 
 ## Analyze your own program
 
