@@ -1,0 +1,9 @@
+.git
+.agents
+.codex
+.aws
+build
+node_modules
+site/.git
+site/.openai
+*.tar.gz
