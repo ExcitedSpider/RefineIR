@@ -2,6 +2,8 @@
 
 An interactive CEGAR model checker built with SVF and Z3. Explore the program, predicates, abstract models, and SMT queries behind each refinement.
 
+**[Live preview → refineir.qiuyif.org](https://refineir.qiuyif.org/)** — explore the examples in your browser, with no installation.
+
 ## Install and run with Docker
 
 Install [Docker Engine](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation), then:
